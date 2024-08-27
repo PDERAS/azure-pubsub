@@ -18,8 +18,19 @@ composer require pderas/azure-pubsub
 ```
 
 
-
 # Configuration
+In `.env`
+```env
+PUBSUB_KEY="your-pubsub-key"
+PUBSUB_ENDPOINT="https://your-service-name.webpubsub.azure.com"
+
+BROADCAST_DRIVER=azure
+```
+
+The keys and endpoint can by found in your Azure PubSub portal under the `Keys` setting
+![Azure portal screenshot](images/azure_config.png)
+
+Configure broadcasting
 ```php
 // config/broadcasting.php
 return [
@@ -34,9 +45,6 @@ return [
         ],
 ];
 ```
-
-The keys and endpoint can by found in your Azure PubSub portal under the `Keys` setting
-![Azure portal screenshot](images/azure_config.png)
 
 # Client Configuration
 A separate package can be found here for front-end usage: https://github.com/PDERAS/azure-pubsub-client
