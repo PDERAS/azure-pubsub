@@ -5,6 +5,7 @@ namespace Pderas\AzurePubSub\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Broadcasting\BroadcastManager;
 use Pderas\AzurePubSub\Broadcasting\AzureBroadcaster;
+use Pderas\AzurePubSub\Services\AzurePubSubConfig;
 
 class AzureBroadcasterServiceProvider extends ServiceProvider
 {
@@ -23,8 +24,8 @@ class AzureBroadcasterServiceProvider extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__.'/../../routes/pubsub.php');
 
-        $manager->extend('azure-broadcaster', function ($app, $config) {
-            return new AzureBroadcaster($config);
+        $manager->extend('azure-broadcaster', function () {
+            return new AzureBroadcaster();
         });
     }
 }

@@ -2,22 +2,26 @@
 
 namespace Pderas\AzurePubSub\Http\Controllers;
 
-use Firebase\JWT\JWT;
-use Pderas\AzurePubSub\Services\AzurePubSubConfig;
+use Pderas\AzurePubSub\Http\AzurePubSubClient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Pderas\AzurePubSub\Services\AzurePubSubConfig;
 
 class AzurePubSubController
 {
     private $config;
 
+    private $client;
+
+    private $token_manager;
+
     /**
      * Controller constructor with injected config dependency
      */
-    public function __construct(AzurePubSubConfig $config)
+    public function __construct(AzurePubSubClient $client)
     {
-        $this->config = $config;
+        $this->client = $client;
     }
 
     /**
@@ -36,35 +40,16 @@ class AzurePubSubController
         if ($validator->fails()) {
             return response()->json([
                 'errors' => $validator->errors()
-            ], 422); // 422 Unprocessable Entity
+            ], 422);
         }
 
-        $access_token = $this->getAccessToken($hub, $group);
-        $full_url = $this->config->getUrl($hub) . '?access_token=' . $access_token;
+        $access_token = $this->client->getClientAccessToken($hub, $group);
+
+        $full_url = AzurePubSubConfig::getUrl($hub) . '?access_token=' . $access_token;
 
         return response()->json([
             'url'         => $full_url,
             'accessToken' => $access_token
         ]);
-    }
-
-    /**
-     * Get the access token for the given group.
-     */
-    private function getAccessToken(string $hub, string $group): string
-    {
-        $key = $this->config->getKey();
-        $exp = $this->config->getExpiry();
-
-        $payload = [
-            'iat'   => time(),                      // issued at
-            'exp'   => time() + $exp,               // expires at
-            'aud'   => $this->config->getUrl($hub), // audience
-            'role'  => [
-                "webpubsub.joinLeaveGroup.{$group}"
-            ]
-        ];
-
-        return JWT::encode($payload, $key, 'HS256');
     }
 }
