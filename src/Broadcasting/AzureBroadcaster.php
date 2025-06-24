@@ -10,12 +10,9 @@ class AzureBroadcaster extends Broadcaster implements BroadcasterContract
 {
     protected $client;
 
-    public function __construct(array $config)
+    public function __construct()
     {
-        $this->client = new AzurePubSubClient(
-            $config['key'],
-            $config['endpoint'],
-        );
+        $this->client = new AzurePubSubClient();
     }
 
     public function auth($request)
